@@ -1,0 +1,109 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build the project using NestJS"
+    },
+    {
+      "label": "format",
+      "type": "npm",
+      "script": "format",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Format the code using Prettier"
+    },
+    {
+      "label": "start",
+      "type": "npm",
+      "script": "start",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Start the NestJS application"
+    },
+    {
+      "label": "start:dev",
+      "type": "npm",
+      "script": "start:dev",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Start the NestJS application in development mode"
+    },
+    {
+      "label": "start:debug",
+      "type": "npm",
+      "script": "start:debug",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Start the NestJS application in debug mode"
+    },
+    {
+      "label": "start:prod",
+      "type": "npm",
+      "script": "start:prod",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Start the NestJS application in production mode"
+    },
+    {
+      "label": "lint",
+      "type": "npm",
+      "script": "lint",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Lint the code using ESLint"
+    },
+    {
+      "label": "test",
+      "type": "npm",
+      "script": "test",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run the tests using Jest"
+    },
+    {
+      "label": "test:watch",
+      "type": "npm",
+      "script": "test:watch",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run the tests in watch mode using Jest"
+    },
+    {
+      "label": "test:coverage",
+      "type": "npm",
+      "script": "test:coverage",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run the tests and generate coverage report using Jest"
+    },
+    {
+      "label": "test:debug",
+      "type": "npm",
+      "script": "test:debug",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run the tests in debug mode using Jest"
+    },
+    {
+      "label": "test:e2e",
+      "type": "npm",
+      "script": "test:e2e",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run the end-to-end tests using Jest"
+    },
+    {
+      "label": "sonar",
+      "type": "npm",
+      "script": "sonar",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Run the SonarQube scanner"
+    }
+  ]
+}
