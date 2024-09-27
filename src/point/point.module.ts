@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { LockManager } from '../lock-manager/lock-manager';
 import { PointController } from './point.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { PointService } from './point.service';
@@ -11,6 +12,7 @@ import { UserPointRepositoryImpl } from 'src/database/user-point.repository.impl
   imports: [DatabaseModule],
   providers: [
     PointService,
+    LockManager,
     { provide: UserPointRepositoryToken, useClass: UserPointRepositoryImpl },
     {
       provide: PointHistoryRepositoryToken,

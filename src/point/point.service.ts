@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { LockManager } from '../lock-manager/lock-manager';
 import { PointHistory, TransactionType, UserPoint } from './point.model';
 import {
   UserPointRepository,
@@ -12,6 +13,7 @@ import {
 @Injectable()
 export class PointService {
   constructor(
+    private lockManager: LockManager,
     @Inject(UserPointRepositoryToken)
     private userPointRepository: UserPointRepository,
     @Inject(PointHistoryRepositoryToken)
@@ -20,12 +22,7 @@ export class PointService {
 
   async getUserPoint(userId: number): Promise<UserPoint> {
     const userPoint = await this.userPointRepository.findUserPointById(userId);
-
-    if (!userPoint) {
-      return this.getInitialUserPoint(userId);
-    }
-
-    return userPoint;
+    return userPoint ?? this.getInitialUserPoint(userId);
   }
 
   async getPointHistories(userId: number): Promise<PointHistory[]> {
@@ -33,47 +30,51 @@ export class PointService {
   }
 
   async chargePoint(userId: number, amount: number): Promise<UserPoint> {
-    const userPoint =
-      (await this.userPointRepository.findUserPointById(userId)) ??
-      this.getInitialUserPoint(userId);
+    return this.lockManager.doWithLock(userId, async () => {
+      const userPoint =
+        (await this.userPointRepository.findUserPointById(userId)) ??
+        this.getInitialUserPoint(userId);
 
-    userPoint.point += amount;
+      userPoint.point += amount;
 
-    const updatedUserPoint =
-      await this.userPointRepository.upsertUserPoint(userPoint);
+      const updatedUserPoint =
+        await this.userPointRepository.upsertUserPoint(userPoint);
 
-    await this.pointHistoryRepository.saveHistory({
-      userId,
-      amount,
-      type: TransactionType.CHARGE,
-      timeMillis: Date.now(),
+      await this.pointHistoryRepository.saveHistory({
+        userId,
+        amount,
+        type: TransactionType.CHARGE,
+        timeMillis: Date.now(),
+      });
+
+      return updatedUserPoint;
     });
-
-    return updatedUserPoint;
   }
 
   async usePoint(userId: number, amount: number): Promise<UserPoint> {
-    const userPoint =
-      (await this.userPointRepository.findUserPointById(userId)) ??
-      this.getInitialUserPoint(userId);
+    return this.lockManager.doWithLock(userId, async () => {
+      const userPoint =
+        (await this.userPointRepository.findUserPointById(userId)) ??
+        this.getInitialUserPoint(userId);
 
-    if (userPoint.point < amount) {
-      throw Error('포인트 잔액이 부족합니다.');
-    }
+      if (userPoint.point < amount) {
+        throw Error('포인트 잔액이 부족합니다.');
+      }
 
-    userPoint.point -= amount;
+      userPoint.point -= amount;
 
-    const updatedUserPoint =
-      await this.userPointRepository.upsertUserPoint(userPoint);
+      const updatedUserPoint =
+        await this.userPointRepository.upsertUserPoint(userPoint);
 
-    await this.pointHistoryRepository.saveHistory({
-      userId,
-      amount,
-      type: TransactionType.USE,
-      timeMillis: Date.now(),
+      await this.pointHistoryRepository.saveHistory({
+        userId,
+        amount,
+        type: TransactionType.USE,
+        timeMillis: Date.now(),
+      });
+
+      return updatedUserPoint;
     });
-
-    return updatedUserPoint;
   }
 
   private getInitialUserPoint(userId: number) {
